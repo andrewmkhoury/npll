@@ -5,6 +5,8 @@ Works with **pnpm**, **yarn**, and **npm** in any combination (e.g. library uses
 
 Replaces the need for `npm link` / `yarn link` with a workspace-safe flow: the library is packed into a tarball, staged in the app’s `.local-packages/`, and installed from that file. No symlinks, no cross-workspace protocol issues.
 
+**Run commands from your app directory.** The app is always the current directory (cwd).
+
 ### Why node-link-local instead of yalc?
 
 [Yalc](https://github.com/wclr/yalc) is a popular “local package” tool, but it relies on symlinks (with `yalc link`) or on copying into `.yalc/` and `file:` references. That can cause real pain when developing and running tests locally:
@@ -32,40 +34,45 @@ npm install -g node-link-local
 Or run without installing:
 
 ```bash
-npx node-link-local add /path/to/lib /path/to/app
+npx node-link-local add /path/to/lib
 ```
 
 ## Commands
 
 | Command | Description |
 |--------|-------------|
-| `node-link-local add <path-to-lib> <path-to-app>` | Build (if needed), pack the library, and install it into the app from a staged tarball |
-| `node-link-local remove <path-to-lib> <path-to-app>` | Uninstall the library from the app and remove the staged tarball |
+| `node-link-local add <path-to-lib>` | Add the local package at `<path-to-lib>` into the current directory (build, pack, install from staged tarball). |
+| `node-link-local remove` | Remove all packages linked via node-link-local and delete `.local-packages/` if empty. |
+| `node-link-local remove <name-or-path>` | Remove one package (by package name or path). If it was the last one, removes `.local-packages/`. |
 
 ## Examples
 
 ```bash
-# Use a local package "my-lib" inside "my-app"
-node-link-local add ./packages/my-lib ./apps/my-app
+# From your app directory
+node-link-local add ../packages/my-lib
 
-# Stop using the local copy
-node-link-local remove ./packages/my-lib ./apps/my-app
+# Remove all linked packages and clean bindings
+node-link-local remove
+
+# Remove one package by name
+node-link-local remove my-lib
+
+# Remove one package by path (same as used in add)
+node-link-local remove ../packages/my-lib
 ```
 
-Paths can be absolute or relative. Both directories must contain a `package.json`. The library’s `package.json` is used to get the package name; the app’s lockfile is used to detect pnpm/yarn/npm.
+Paths are relative to the current directory. Both the library and app must contain a `package.json`. The app’s lockfile is used to detect pnpm/yarn/npm.
 
 ## How it works
 
-1. **add**
-   - Detects package manager in both lib and app (pnpm / yarn / npm).
-   - If the lib has no `dist/`, runs `build` with the lib’s package manager.
-   - Copies the lib into a temp dir, normalizes `package.json` (e.g. `workspace:*` → `*`, strips prepare/prepack/postpack), and runs `pack`.
-   - Copies the resulting `.tgz` into the app’s `.local-packages/`.
-   - Installs from that tarball using the app’s package manager (with flags that avoid workspace linking issues where applicable).
+1. **add &lt;path-to-lib&gt;**  
+   Detects package manager in lib and app (cwd). If the lib has no `dist/`, runs `build`. Copies the lib into a temp dir, normalizes `package.json` (e.g. `workspace:*` → `*`, strips prepare/prepack/postpack), runs `pack`, copies the `.tgz` into the app’s `.local-packages/`, and installs from that tarball.
 
-2. **remove**
-   - Uninstalls the package from the app using the app’s package manager.
-   - Deletes any matching `.tgz` in the app’s `.local-packages/`.
+2. **remove** (no args)  
+   Finds all dependencies in the app’s `package.json` that reference `file:.local-packages/`, uninstalls each via the app’s package manager, deletes the staged tarballs, and removes `.local-packages/` if empty.
+
+3. **remove &lt;name-or-path&gt;**  
+   Uninstalls that one package and deletes its tarball. If no `file:.local-packages/` dependencies remain, removes the `.local-packages/` directory.
 
 ## Requirements
 
