@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const cli = path.join(__dirname, '..', 'bin', 'npll.js');
+const cli = path.join(__dirname, '..', 'bin', 'node-link-local.js');
 
 function run(args) {
   return spawnSync(process.execPath, [cli, ...args], {

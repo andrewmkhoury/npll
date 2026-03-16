@@ -1,13 +1,23 @@
 {
-  "name": "npll",
-  "version": "1.0.0",
-  "description": "Node Package Link Local — sync a local npm package into another project via staged tarballs (pnpm/yarn/npm agnostic)",
+  "name": "node-link-local",
+  "version": "1.0.0-alpha.0",
+  "description": "Sync a local npm package into another project via staged tarballs (pnpm/yarn/npm agnostic). No symlinks.",
   "type": "module",
   "bin": {
-    "npll": "./bin/npll.js"
+    "node-link-local": "bin/node-link-local.js",
+    "nll": "bin/node-link-local.js"
   },
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewmkhoury/npll.git"
+  },
+  "homepage": "https://github.com/andrewmkhoury/npll#readme",
   "scripts": {
-    "start": "node bin/npll.js",
+    "start": "node bin/node-link-local.js",
     "test": "node test/run.js"
   },
   "keywords": [

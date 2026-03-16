@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-/** npll — Node Package Link Local. Sync a local package into an app via staged tarballs. Usage: add|remove <lib-path> <app-path> */
+/** node-link-local — sync a local package into an app via staged tarballs. Usage: add|remove <lib-path> <app-path> */
 import { add, remove } from '../lib/sync.js';
 
 const [cmd, libPath, appPath] = process.argv.slice(2);
 const usage = () => {
-  console.error('Usage: npll add <path-to-lib> <path-to-app>');
-  console.error('       npll remove <path-to-lib> <path-to-app>');
+  console.error('Usage: node-link-local add <path-to-lib> <path-to-app>');
+  console.error('       node-link-local remove <path-to-lib> <path-to-app>');
 };
 
 if (!cmd || !libPath || !appPath) {
