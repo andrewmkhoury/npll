@@ -1,6 +1,6 @@
 {
   "name": "node-link-local",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sync a local npm package into another project via staged tarballs (pnpm/yarn/npm agnostic). No symlinks.",
   "type": "module",
   "bin": {
